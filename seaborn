@@ -1,0 +1,93 @@
+import pandas as pd
+import numpy as np
+
+# Criando o DataFrame com os dados fornecidos
+data = {
+    'Data': ['15/01/2025', '15/01/2025', '15/01/2025', '15/01/2025', '15/01/2025'],
+    'Cidade': ['São Paulo', 'Rio de Janeiro', 'Curitiba', 'Porto Alegre', 'Salvador'],
+    'Temperatura Máxima (°C)': [30.5, 35.0, 24.0, 28.0, 31.0],
+    'Temperatura Mínima (°C)': [22.0, 25.0, 18.0, 20.0, 24.5],
+    'Precipitação (mm)': [12.0, np.nan, 8.0, 15.0, np.nan],
+    'Umidade Relativa (%)': [78, 70, np.nan, 82, 80]
+}
+
+df = pd.DataFrame(data)
+
+# Substituindo valores ausentes
+media_precipitacao = df['Precipitação (mm)'].mean()
+mediana_umidade = df['Umidade Relativa (%)'].median()
+
+df['Precipitação (mm)'].fillna(media_precipitacao, inplace=True)
+df['Umidade Relativa (%)'].fillna(mediana_umidade, inplace=True)
+
+# Adicionando a coluna Amplitude Térmica
+df['Amplitude Térmica'] = df['Temperatura Máxima (°C)'] - df['Temperatura Mínima (°C)']
+
+# Criando um novo DataFrame com cidades com Temperatura Máxima acima de 30°C
+df_30 = df[df['Temperatura Máxima (°C)'] > 30]
+
+# Reordenando as colunas
+df = df[['Data', 'Cidade', 'Temperatura Máxima (°C)', 'Temperatura Mínima (°C)', 'Amplitude Térmica', 'Precipitação (mm)', 'Umidade Relativa (%)']]
+
+# Exibindo o DataFrame final
+print(df)
+print("\nCidades com Temperatura Máxima acima de 30°C:")
+print(df_30)
+
+import matplotlib.pyplot as plt
+
+# Definindo os horários e temperaturas fictícias
+horarios = list(range(25))  # De 0h a 24h
+temperaturas = [15 + (i * (30-15)/12) if i <= 12 else 30 - ((i-12) * (30-15)/12) for i in horarios]
+
+# Gerando o gráfico
+plt.figure(figsize=(10, 6))
+plt.plot(horarios, temperaturas, marker='o', color='b', label='Temperatura')
+
+# Adicionando título e rótulos
+plt.title("Evolução da Temperatura Durante o Dia")
+plt.xlabel("Horário (h)")
+plt.ylabel("Temperatura (°C)")
+
+# Adicionando grade e exibição do gráfico
+plt.grid(True)
+plt.xticks(range(0, 25, 1))  # Definindo as horas no eixo X
+plt.yticks(range(10, 35, 2))  # Definindo a temperatura no eixo Y
+plt.legend()
+plt.show()
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Criando um DataFrame com dados fictícios de vendas
+dados_vendas = {
+    'Dia': ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'],
+    'Vendas Totais': [1500, 1600, 1300, 1700, 2000, 2200, 1800],
+    'Número de Clientes': [100, 110, 90, 120, 130, 140, 125],
+    'Lucro': [300, 320, 260, 340, 400, 440, 360]
+}
+
+df_vendas = pd.DataFrame(dados_vendas)
+
+# 1. Gráfico de barras: Total de vendas por dia
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Dia', y='Vendas Totais', data=df_vendas, palette='Blues_d')
+plt.title('Total de Vendas por Dia')
+plt.xlabel('Dia')
+plt.ylabel('Vendas Totais (R$)')
+plt.show()
+
+# 2. Gráfico de dispersão: Relacionando número de clientes e vendas totais
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='Número de Clientes', y='Vendas Totais', data=df_vendas, color='green')
+plt.title('Número de Clientes vs Vendas Totais')
+plt.xlabel('Número de Clientes')
+plt.ylabel('Vendas Totais (R$)')
+plt.show()
+
+# 3. Heatmap: Correlação entre Vendas, Clientes e Lucro
+plt.figure(figsize=(10, 6))
+correlacao = df_vendas[['Vendas Totais', 'Número de Clientes', 'Lucro']].corr()
+sns.heatmap(correlacao, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlação entre Vendas, Número de Clientes e Lucro')
+plt.show()
